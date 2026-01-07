@@ -13,7 +13,7 @@ function App() {
     setResult(null);
 
     try {
-      const response = await fetch("http://10.17.176.180:3000/api/recommend", {
+      const response = await fetch("https://acelucid-backend-latest-n364znmy1-alankrit-dabrals-projects.vercel.app/api/recommend", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ genre: userInput }),
