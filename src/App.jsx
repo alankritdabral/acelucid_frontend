@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 function App() {
   const [userInput, setUserInput] = useState("");
-  const [result, setResult] = useState(null);
+  const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -10,33 +10,34 @@ function App() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    setResult(null);
+    setMovies([]);
 
     try {
-      const response = await fetch("https://acelucid-backend-latest-n364znmy1-alankrit-dabrals-projects.vercel.app/api/recommend", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ genre: userInput }),
-      });
+      const response = await fetch(
+        "https://acelucid-backend-latest-n364znmy1-alankrit-dabrals-projects.vercel.app/api/recommend",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ genre: userInput }),
+        }
+      );
 
-      const json = await response.json();
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(json.error || "Unknown server error");
+        throw new Error(data.error || "Server error");
       }
 
-      setResult(json);
+      // ✅ movies is already an array from backend
+      setMovies(data.movies);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
-
-  const parsedMovies =
-    result?.movies?.length > 0
-      ? JSON.parse(result.movies[0]).recommended_movies
-      : [];
 
   const styles = {
     container: {
@@ -45,6 +46,7 @@ function App() {
       background: "linear-gradient(135deg, #0f2027, #203a43, #2c5364)",
       color: "#fff",
       textAlign: "center",
+      fontFamily: "Arial, sans-serif",
     },
     heading: {
       fontSize: "2.5rem",
@@ -59,13 +61,14 @@ function App() {
     },
     input: {
       width: "300px",
-      padding: "0.7rem",
+      padding: "0.8rem",
       borderRadius: "8px",
       border: "none",
       fontSize: "1rem",
+      outline: "none",
     },
     button: {
-      padding: "0.7rem 1.2rem",
+      padding: "0.8rem 1.4rem",
       borderRadius: "8px",
       border: "none",
       background: "#ff9800",
@@ -77,14 +80,11 @@ function App() {
       color: "#ff6b6b",
       marginTop: "1rem",
     },
-    subHeading: {
-      marginBottom: "1rem",
-    },
-    cardGrid: {
+    grid: {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
       gap: "1rem",
-      maxWidth: "800px",
+      maxWidth: "900px",
       margin: "0 auto",
     },
     card: {
@@ -94,6 +94,10 @@ function App() {
       borderRadius: "12px",
       boxShadow: "0 8px 20px rgba(0,0,0,0.2)",
       fontWeight: "500",
+    },
+    subtitle: {
+      marginBottom: "1rem",
+      fontSize: "1.5rem",
     },
   };
 
@@ -110,6 +114,7 @@ function App() {
           style={styles.input}
           required
         />
+
         <button type="submit" disabled={loading} style={styles.button}>
           {loading ? "Finding..." : "Get Recommendations"}
         </button>
@@ -117,11 +122,11 @@ function App() {
 
       {error && <p style={styles.error}>{error}</p>}
 
-      {parsedMovies.length > 0 && (
+      {movies.length > 0 && (
         <>
-          <h2 style={styles.subHeading}>Recommended Movies</h2>
-          <div style={styles.cardGrid}>
-            {parsedMovies.map((movie, index) => (
+          <h2 style={styles.subtitle}>Recommended Movies</h2>
+          <div style={styles.grid}>
+            {movies.map((movie, index) => (
               <div key={index} style={styles.card}>
                 🎥 {movie}
               </div>
