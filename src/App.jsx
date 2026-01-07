@@ -14,7 +14,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "https://vercel.com/alankrit-dabrals-projects/acelucid-backend/BGDy9uoHCaL11APeoKfW5F4RtCDo/api/recommend",
+        "https://acelucid-backend.vercel.app//api/recommend",
         {
           method: "POST",
           headers: {
